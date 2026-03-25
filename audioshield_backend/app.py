@@ -1,73 +1,80 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import os
-import uuid
+import os, uuid, sqlite3, hashlib
 from datetime import datetime, timedelta
-import sqlite3
-from crypto_utils import generate_key_from_audio, encrypt_data
+from crypto_utils import generate_key_from_bytes, encrypt_data, decrypt_data
 
 app = Flask(__name__)
 CORS(app)
-
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Helper function to connect to DB
 def get_db_connection():
     conn = sqlite3.connect('database.db')
+    # Yeh line jadoo hai! Isse hum room['file_name'] likh payenge
+    conn.row_factory = sqlite3.Row 
     return conn
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    # 1. Check karo ki file aur audio dono aaye hain ya nahi
-    if 'file' not in request.files or 'audio' not in request.files:
-        return jsonify({"error": "Missing file or audio key"}), 400
-
-    file = request.files['file']
-    audio = request.files['audio']
-    plan = request.form.get('plan', 'free') # Default free plan
-
-    # 2. Temporary audio save karo key nikalne ke liye
-    temp_audio_path = "temp_key.wav"
-    audio.save(temp_audio_path)
-    
     try:
-        # 3. Audio se Key generate karo
-        key = generate_key_from_audio(temp_audio_path)
+        file = request.files['file']
+        audio = request.files['audio']
         
-        # 4. Original file read karo aur encrypt karo
-        file_data = file.read()
-        encrypted_content = encrypt_data(file_data, key)
+        # Audio bytes read karo aur Hash print karo
+        audio_bytes = audio.read()
+        audio_hash = hashlib.sha256(audio_bytes).hexdigest()
+        print(f"\n[UPLOAD] Audio Hash: {audio_hash}") # Yeh terminal mein dikhega
 
-        # 5. Unique Room Code aur encrypted filename banao
-        room_code = str(uuid.uuid4())[:8].upper() # Example: A1B2C3D4
-        encrypted_filename = f"{room_code}.enc"
-        file_path = os.path.join(UPLOAD_FOLDER, encrypted_filename)
+        key = generate_key_from_bytes(audio_bytes)
+        encrypted_content = encrypt_data(file.read(), key)
 
-        # 6. Encrypted file save karo
+        room_code = str(uuid.uuid4())[:8].upper()
+        file_path = os.path.join(UPLOAD_FOLDER, f"{room_code}.enc")
+        
         with open(file_path, 'wb') as f:
             f.write(encrypted_content)
 
-        # 7. Database mein entry karo
-        expiry = datetime.now() + (timedelta(days=1) if plan == 'free' else timedelta(days=7))
-        
+        expiry = datetime.now() + timedelta(days=1)
         conn = get_db_connection()
-        conn.execute('INSERT INTO rooms (room_code, file_name, expiry_time, plan) VALUES (?, ?, ?, ?)',
-                     (room_code, file.filename, expiry, plan))
+        conn.execute('INSERT INTO rooms (room_code, file_name, expiry_time) VALUES (?, ?, ?)',
+                     (room_code, file.filename, expiry))
         conn.commit()
         conn.close()
 
-        # 8. Clean up temp audio
-        os.remove(temp_audio_path)
-
-        return jsonify({
-            "message": "File secured! 🔥",
-            "room_code": room_code,
-            "expires_at": expiry.strftime("%Y-%m-%d %H:%M:%S")
-        }), 200
-
+        return jsonify({"message": "Secured!", "room_code": room_code}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/download', methods=['POST'])
+def download_file():
+    try:
+        room_code = request.form.get('room_code')
+        audio = request.files.get('audio')
+
+        # Audio bytes read karo aur Hash print karo
+        audio_bytes = audio.read()
+        audio_hash = hashlib.sha256(audio_bytes).hexdigest()
+        print(f"[DOWNLOAD] Audio Hash: {audio_hash}") # Yeh match hona chahiye!
+
+        conn = get_db_connection()
+        room = conn.execute('SELECT * FROM rooms WHERE room_code = ?', (room_code,)).fetchone()
+        conn.close()
+
+        if not room: return jsonify({"error": "Invalid room"}), 404
+
+        key = generate_key_from_bytes(audio_bytes)
+        with open(os.path.join(UPLOAD_FOLDER, f"{room_code}.enc"), 'rb') as f:
+            decrypted_content = decrypt_data(f.read(), key)
+
+        temp_path = f"decrypted_{room['file_name']}"
+        with open(temp_path, 'wb') as f:
+            f.write(decrypted_content)
+
+        return send_file(temp_path, as_attachment=True)
+    except Exception as e:
+        print(f"!!! DECRYPTION ERROR: {str(e)}") # Real error terminal mein dikhega
+        return jsonify({"error": "Wrong audio key!"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

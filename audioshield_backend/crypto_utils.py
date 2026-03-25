@@ -1,18 +1,19 @@
-import librosa
 import hashlib
 import os
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-# Audio file se 256-bit Key nikalne ka function
-def generate_key_from_audio(audio_path):
-    # Audio load karna
-    y, sr = librosa.load(audio_path, sr=None)
-    # Audio data ko bytes mein convert karke hash karna
-    audio_bytes = y.tobytes()
+# Seedha bytes se key banayega
+def generate_key_from_bytes(audio_bytes):
     return hashlib.sha256(audio_bytes).digest()
 
-# Data ko encrypt karne ka function
 def encrypt_data(data, key):
     aesgcm = AESGCM(key)
-    nonce = os.urandom(12) 
-    return nonce + aesgcm.encrypt(nonce, data, None)
+    nonce = os.urandom(12)
+    ciphertext = aesgcm.encrypt(nonce, data, None)
+    return nonce + ciphertext
+
+def decrypt_data(encrypted_data, key):
+    aesgcm = AESGCM(key)
+    nonce = encrypted_data[:12]
+    ciphertext = encrypted_data[12:]
+    return aesgcm.decrypt(nonce, ciphertext, None)
