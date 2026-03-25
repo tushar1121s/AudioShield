@@ -9,6 +9,7 @@ test.mp3
 test_api.py
 test_crypto.py
 test_download.py
+image.png
 RECOVERED_FILE.png
 decrypted_*
 .env
