@@ -1,0 +1,21 @@
+# --- Python / Backend Junk ---
+audioshield_backend/venv/
+audioshield_backend/__pycache__/
+audioshield_backend/audioshield_backend/__pycache__/
+audioshield_backend/uploads/
+audioshield_backend/database.db
+
+# --- Test Files & Media (Strictly Ignore) ---
+audioshield_backend/*.png
+audioshield_backend/*.mp3
+audioshield_backend/test_*.py
+
+# --- Frontend Junk ---
+audioshield_frontend/node_modules/
+audioshield_frontend/build/
+.env
+.env.local
+
+# --- System Files ---
+.DS_Store
+Thumbs.db
