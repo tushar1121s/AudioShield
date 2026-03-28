@@ -54,19 +54,17 @@
 sequenceDiagram
     autonumber
     participant U as User (Sender)
-    participant F as React Frontend
-    participant B as Flask Backend
+    participant F as React UI
+    participant B as Flask API
     participant D as SQLite DB
 
-    U->>F: Uploads File + Audio Key
-    F->>B: Sends Data (POST /upload)
-    
+    U->>F: Uploads File + Audio
+    F->>B: POST /upload
     Note over B: SHA-256(Audio) = 256-bit Key
-    Note over B: AES-GCM Encryption Logic
-    
-    B->>D: Logs Transaction Metadata
-    B->>F: Returns Room Code + QR
-    F->>U: Displays Room Access Info
+    Note over B: AES-GCM Encrypts File
+    B->>D: Logs Room Metadata
+    B->>F: Returns Code + QR
+    F->>U: Displays Success
 
 ### 🔼 Upload — Sender Side
 
