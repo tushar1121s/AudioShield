@@ -50,21 +50,13 @@
 ---
 
 ## 🧠 How It Works
-```mermaid
-sequenceDiagram
-    autonumber
-    participant U as User (Sender)
-    participant F as React UI
-    participant B as Flask API
-    participant D as SQLite DB
+**1. Input Phase** > User uploads a target file + a "Key" audio file through the **React** dashboard.
 
-    U->>F: Uploads File + Audio
-    F->>B: POST /upload
-    Note over B: SHA-256(Audio) = 256-bit Key
-    Note over B: AES-GCM Encrypts File
-    B->>D: Logs Room Metadata
-    B->>F: Returns Code + QR
-    F->>U: Displays Success
+**2. Cryptographic Processing** > **Flask** backend reads the audio bytes ➔ Generates a **SHA-256** hash ➔ Encrypts the file using **AES-GCM** with a random 12-byte nonce.
+
+**3. Storage & Access** > Metadata is logged in **SQLite** ➔ Encrypted `.enc` file is stored ➔ System generates a unique **Room Code** and **QR Code**.
+
+**4. Decryption** > Receiver enters the Room Code + uploads the **exact same audio file** ➔ System validates the hash ➔ File is decrypted and served.
 
 ### 🔼 Upload — Sender Side
 
