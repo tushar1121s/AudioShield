@@ -50,27 +50,23 @@
 ---
 
 ## 🧠 How It Works
-
 ```mermaid
 sequenceDiagram
     autonumber
-    participant U as 👤 User (Sender)
-    participant F as ⚛️ React Frontend
-    participant B as 🐍 Flask Backend
-    participant D as 💾 SQLite DB
+    participant U as User (Sender)
+    participant F as React Frontend
+    participant B as Flask Backend
+    participant D as SQLite DB
 
-    Note over U, F: Upload Phase
-    U->>F: Upload File + Audio Key
-    F->>B: POST /upload (Encrypted Stream)
+    U->>F: Uploads File + Audio Key
+    F->>B: Sends Data (POST /upload)
     
-    rect rgb(30, 30, 30)
-        Note over B: SHA-256(Audio) = Key
-        Note over B: AES-GCM Encryption
-    end
-
-    B->>D: Store Metadata & Room Code
-    B->>F: Return Room Code + QR
-    F->>U: Display "Room Ready" 🛡️
+    Note over B: SHA-256(Audio) = 256-bit Key
+    Note over B: AES-GCM Encryption Logic
+    
+    B->>D: Logs Transaction Metadata
+    B->>F: Returns Room Code + QR
+    F->>U: Displays Room Access Info
 
 ### 🔼 Upload — Sender Side
 
