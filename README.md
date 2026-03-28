@@ -1,11 +1,11 @@
+# 🛡️ AudioShield
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=38B2AC&center=true&vCenter=true&width=500&lines=🛡️+AUDIOSHIELD;Secure+Audio-Keyed+Encryption;AES-GCM+Protected+Sharing;Built+by+Tushar+Kumar" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=38B2AC&center=true&vCenter=true&width=500&lines=%F0%9F%9B%A1%EF%B8%8F+AUDIOSHIELD;Secure+Audio-Keyed+Encryption;AES-GCM+Protected+Sharing;Built+by+Tushar+Kumar"/>
 </p>
-
 <p align="center">
-  <img src="https://img.shields.io/github/stars/your-username/AudioShield?style=for-the-badge&color=38B2AC" />
-  <img src="https://img.shields.io/github/forks/your-username/AudioShield?style=for-the-badge&color=38B2AC" />
-  <img src="https://img.shields.io/github/repo-size/your-username/AudioShield?style=for-the-badge&color=38B2AC" />
+  <img src="https://img.shields.io/github/stars/tushar1121s/AudioShield?style=for-the-badge&color=38B2AC"/>
+  <img src="https://img.shields.io/github/forks/tushar1121s/AudioShield?style=for-the-badge&color=38B2AC"/>
+  <img src="https://img.shields.io/github/repo-size/tushar1121s/AudioShield?style=for-the-badge&color=38B2AC"/>
 </p>
 
 <p align="center">
@@ -17,7 +17,6 @@
 </p>
 
 ---
-# 🛡️ AudioShield
 ### Secure Audio-Keyed File Sharing System
 
 ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
