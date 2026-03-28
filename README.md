@@ -51,19 +51,26 @@
 
 ## 🧠 How It Works
 
+```mermaid
 sequenceDiagram
-    participant U as User (Sender)
-    participant F as React Frontend
-    participant B as Flask Backend
-    participant D as SQLite DB
+    autonumber
+    participant U as 👤 User (Sender)
+    participant F as ⚛️ React Frontend
+    participant B as 🐍 Flask Backend
+    participant D as 💾 SQLite DB
 
+    Note over U, F: Upload Phase
     U->>F: Upload File + Audio Key
     F->>B: POST /upload (Encrypted Stream)
-    Note over B: SHA-256(Audio) = Key
-    Note over B: AES-GCM Encryption
+    
+    rect rgb(30, 30, 30)
+        Note over B: SHA-256(Audio) = Key
+        Note over B: AES-GCM Encryption
+    end
+
     B->>D: Store Metadata & Room Code
     B->>F: Return Room Code + QR
-    F->>U: Display "Room Ready"
+    F->>U: Display "Room Ready" 🛡️
 
 ### 🔼 Upload — Sender Side
 
@@ -122,7 +129,7 @@ $$Ciphertext = \text{AES-GCM}_{Key, Nonce}(\text{Plaintext})$$
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React (Vite), Tailwind CSS, Axios |
+| Frontend | React (Vite), CSS, Axios |
 | Backend | Python, Flask, Flask-CORS |
 | Encryption | AES-GCM (`cryptography`), SHA-256 (`hashlib`) |
 | QR Code | `qrcode` library |
