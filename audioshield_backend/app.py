@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import os, uuid, sqlite3, hashlib, qrcode, io, base64
+import os, uuid, sqlite3, qrcode, io, base64
 from datetime import datetime, timedelta
 from crypto_utils import generate_key_from_bytes, encrypt_data, decrypt_data
 
@@ -83,7 +83,7 @@ def upload_file():
             f.write(encrypted_content)
 
         # DB entry
-        expiry = datetime.now() + timedelta(days=1)
+        expiry = datetime.now() + timedelta(days = 1)
         conn = get_db_connection()
         conn.execute('INSERT INTO rooms (room_code, file_name, expiry_time) VALUES (?, ?, ?)',
                      (room_code, file.filename, expiry))

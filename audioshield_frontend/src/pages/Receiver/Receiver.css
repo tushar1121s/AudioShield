@@ -1,0 +1,11 @@
+.receiver-container { max-width: 600px; margin: 0 auto; padding: 60px 20px; }
+.receiver-card { padding: 40px; display: flex; flex-direction: column; gap: 30px; }
+.input-group label { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); margin-bottom: 10px; letter-spacing: 2px; }
+.receiver-card input[type="text"] { width: 100%; background: var(--bg-deep); border: 1px solid var(--border-light); padding: 15px; border-radius: 12px; color: #fff; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 4px; outline: none; }
+.receiver-card input[type="text"]:focus { border-color: var(--accent); }
+.audio-drop { position: relative; border: 1px dashed var(--border-light); border-radius: 12px; padding: 20px; text-align: center; transition: var(--transition-smooth); }
+.audio-drop.active { border-color: var(--accent); background: rgba(0, 245, 196, 0.02); }
+.audio-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.drop-content span { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); }
+.error-alert { color: var(--error); font-family: var(--font-mono); font-size: 0.8rem; text-align: center; }
+.success-alert { color: var(--accent); font-family: var(--font-mono); font-size: 0.8rem; text-align: center; }

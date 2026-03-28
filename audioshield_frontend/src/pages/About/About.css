@@ -1,0 +1,6 @@
+.about-container { max-width: 800px; margin: 0 auto; padding: 100px 20px; }
+.about-content { padding: 50px; line-height: 2; color: var(--text-dim); }
+.about-content p { margin-bottom: 25px; font-size: 1.1rem; }
+.about-content strong { color: var(--accent); }
+.about-footer { display: flex; gap: 15px; margin-top: 40px; }
+.badge { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 2px; border: 1px solid var(--border-light); padding: 5px 12px; border-radius: 4px; }

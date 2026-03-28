@@ -1,0 +1,39 @@
+.bg-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #050508; /* Fallback color */
+  overflow: hidden;
+}
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent, #050508), 
+              url("https://grainy-gradients.vercel.app/noise.svg"); /* Temporary noise */
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.orb-primary {
+  width: 600px;
+  height: 600px;
+  background: rgba(0, 245, 196, 0.08);
+  top: -150px;
+  right: -100px;
+}
+
+.orb-secondary {
+  width: 500px;
+  height: 500px;
+  background: rgba(123, 94, 167, 0.06);
+  bottom: -100px;
+  left: -100px;
+}

@@ -1,0 +1,7 @@
+.features-container { max-width: 1000px; margin: 0 auto; padding: 60px 20px; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 40px; }
+.feature-card { padding: 30px; transition: var(--transition-smooth); }
+.feature-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+.feat-icon { font-size: 2rem; margin-bottom: 15px; }
+.feature-card h3 { margin-bottom: 10px; font-size: 1.2rem; }
+.feature-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
