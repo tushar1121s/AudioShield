@@ -11,7 +11,8 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # --- CONFIG ---
-FRONTEND_URL = "http://localhost:3000"  # Change to your deployed URL later
+FRONTEND_URL = "audio-shield.vercel.app"
+  # Change to your deployed URL later
 MAX_FILE_SIZE_MB = 50  # 50MB limit
 
 def get_db_connection():
