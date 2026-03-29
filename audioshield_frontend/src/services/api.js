@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://uninterpretively-unsharpening-kittie.ngrok-free.dev";
 
 /**
  * SERVICE: Upload & Encrypt
