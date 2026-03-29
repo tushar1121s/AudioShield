@@ -58,7 +58,7 @@ const Sender = () => {
     <div className="sender-container page-transition">
       <div className="section-header">
         <h1 className="page-title">Encrypt <span className="text-gradient">Vault</span></h1>
-        <p className="page-subtitle">// Step 01: Payload + Step 02: Audio Key</p>
+        
       </div>
 
       <div className="sender-grid">

@@ -55,7 +55,7 @@ const Receiver = () => {
     <div className="receiver-container page-transition">
       <div className="section-header">
         <h1 className="page-title">Unlock <span className="text-gradient">Vault</span></h1>
-        <p className="page-subtitle">// Input Room Code + Provide Audio Key</p>
+        <p className="page-subtitle"> Input Room Code + Provide Audio Key</p>
       </div>
 
       <div className="receiver-card glass-card">

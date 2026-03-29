@@ -13,7 +13,7 @@ const Features = () => {
     <div className="features-container page-transition">
       <div className="section-header">
         <h1 className="page-title">Technical <span className="text-gradient">Specs</span></h1>
-        <p className="page-subtitle">// How AudioShield protects your data</p>
+        <p className="page-subtitle"> How AudioShield protects your data</p>
       </div>
       <div className="features-grid">
         {techs.map((t, i) => (
