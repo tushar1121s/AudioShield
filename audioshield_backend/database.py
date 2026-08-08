@@ -1,25 +1,28 @@
-import sqlite3
-from datetime import datetime, timedelta
+import psycopg2
+import os
+from dotenv import load_dotenv
 
-# Database initialize karne ka function
+load_dotenv()
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
+
 def init_db():
-    conn = sqlite3.connect('database.db')
+    conn = get_connection()
     cursor = conn.cursor()
-    
-    # Rooms table banana
-    # room_code: unique id (e.g., AX9-K32)
-    # file_path: server pe file kahan saved hai
-    # expiry: kab delete karna hai
-    # plan: free ya pro
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS rooms (
             room_code TEXT PRIMARY KEY,
             file_name TEXT NOT NULL,
-            expiry_time DATETIME NOT NULL,
+            expiry_time TIMESTAMP NOT NULL,
             plan TEXT DEFAULT 'free'
         )
     ''')
     conn.commit()
+    cursor.close()
     conn.close()
     print("✅ Database initialized and Table created!")
 
