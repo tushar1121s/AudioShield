@@ -1,5 +1,4 @@
-const BASE_URL = "https://uninterpretively-unsharpening-kittie.ngrok-free.dev";
-
+const BASE_URL = "https://audioshield-backend.onrender.com";
 
 /**
  * SERVICE: Upload & Encrypt
