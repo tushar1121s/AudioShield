@@ -4,13 +4,17 @@ import os, uuid, qrcode, io, base64
 from datetime import datetime, timedelta
 from psycopg2.extras import RealDictCursor
 from database import get_connection
+from supabase import create_client
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+BUCKET_NAME = "uploads"
+
 from crypto_utils import generate_key_from_bytes, encrypt_data, decrypt_data
 
 app = Flask(__name__)
 CORS(app)
-
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # --- CONFIG ---
 FRONTEND_URL = "https://audio-shield.vercel.app"
@@ -30,9 +34,10 @@ def cleanup_expired_files():
 
     for room in expired_rooms:
         code = room['room_code']
-        file_path = os.path.join(UPLOAD_FOLDER, f"{code}.enc")
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        try:
+            supabase.storage.from_(BUCKET_NAME).remove([f"{code}.enc"])
+        except Exception as e:
+            print(f"⚠️ Storage cleanup failed for {code}: {e}")
         cursor.execute('DELETE FROM rooms WHERE room_code = %s', (code,))
         print(f"🧹 Cleaned up expired room: {code}")
 
@@ -79,9 +84,12 @@ def upload_file():
         encrypted_content = encrypt_data(file_bytes, key)
 
         room_code = str(uuid.uuid4())[:8].upper()
-        file_path = os.path.join(UPLOAD_FOLDER, f"{room_code}.enc")
-        with open(file_path, 'wb') as f:
-            f.write(encrypted_content)
+        storage_path = f"{room_code}.enc"
+        supabase.storage.from_(BUCKET_NAME).upload(
+            storage_path,
+            encrypted_content,
+            file_options={"content-type": "application/octet-stream"}
+        )
 
         expiry = datetime.now() + timedelta(days=1)
         conn = get_db_connection()
@@ -132,12 +140,12 @@ def download_file():
         key = generate_key_from_bytes(audio_bytes)
         print(f"🔑 Decryption Key: {key.hex()}")
 
-        enc_path = os.path.join(UPLOAD_FOLDER, f"{room_code}.enc")
-        if not os.path.exists(enc_path):
+        try:
+            encrypted_content = supabase.storage.from_(BUCKET_NAME).download(f"{room_code}.enc")
+        except Exception:
             return jsonify({"error": "File not found on server!"}), 404
 
-        with open(enc_path, 'rb') as f:
-            decrypted_content = decrypt_data(f.read(), key)
+        decrypted_content = decrypt_data(encrypted_content, key)
 
         return send_file(
             io.BytesIO(decrypted_content),
