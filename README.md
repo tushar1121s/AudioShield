@@ -1,203 +1,100 @@
-# 🛡️ AudioShield
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=38B2AC&center=true&vCenter=true&width=500&lines=%F0%9F%9B%A1%EF%B8%8F+AUDIOSHIELD;Secure+Audio-Keyed+Encryption;AES-GCM+Protected+Sharing;Built+by+Tushar+Kumar"/>
-</p>
-<p align="center">
-  <img src="https://img.shields.io/github/stars/tushar1121s/AudioShield?style=for-the-badge&color=38B2AC"/>
-  <img src="https://img.shields.io/github/forks/tushar1121s/AudioShield?style=for-the-badge&color=38B2AC"/>
-  <img src="https://img.shields.io/github/repo-size/tushar1121s/AudioShield?style=for-the-badge&color=38B2AC"/>
-</p>
+# AudioShield
 
-<p align="center">
-  <a href="#-the-idea"><img src="https://img.shields.io/badge/💡_The_Idea-38B2AC?style=for-the-badge&logoColor=white" /></a>
-  <a href="#-how-it-works"><img src="https://img.shields.io/badge/🧠_How_It_Works-38B2AC?style=for-the-badge&logoColor=white" /></a>
-  <a href="#-installation--setup"><img src="https://img.shields.io/badge/⚙️_Installation-38B2AC?style=for-the-badge&logoColor=white" /></a>
-  <a href="#-security-design"><img src="https://img.shields.io/badge/🔐_Security-38B2AC?style=for-the-badge&logoColor=white" /></a>
-  <a href="#-roadmap"><img src="https://img.shields.io/badge/🗺️_Roadmap-38B2AC?style=for-the-badge&logoColor=white" /></a>
-</p>
-
----
 ### Secure Audio-Keyed File Sharing System
 
-![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![React](https://img.shields.io/badge/Frontend-React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
 ![Flask](https://img.shields.io/badge/Backend-Flask-000000?style=flat-square&logo=flask)
+![Postgres](https://img.shields.io/badge/Database-PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)
+![Supabase](https://img.shields.io/badge/Storage-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 ![AES-GCM](https://img.shields.io/badge/Encryption-AES--GCM-brightgreen?style=flat-square)
-![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?style=flat-square&logo=sqlite)
+![Render](https://img.shields.io/badge/Deployed-Render-46E3B7?style=flat-square&logo=render&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-> AudioShield is a full-stack web application that replaces passwords with **audio files as cryptographic keys** — enabling secure, passwordless file sharing using real-world AES-GCM encryption.
+AudioShield is a full-stack web application that replaces traditional passwords with **audio files as cryptographic keys**, enabling secure, passwordless file sharing using AES-GCM authenticated encryption. The application is deployed as a production system with a cloud-hosted backend, database, and object storage.
 
 ---
 
-## 💡 The Concept
+## Table of Contents
 
-> [!TIP]
-> **AudioShield flips the script on passwords.** Instead of a 12-character string that can be brute-forced, we use the **millions of bytes** in an audio file to generate a 256-bit cryptographic key.
-
-> [!IMPORTANT]
-> **No Audio = No Access.** Even a 1-byte difference in the "Key" audio file will result in a completely different SHA-256 hash, making decryption mathematically impossible.
-
-**AudioShield flips this entirely:**
-
-- 🎵 Upload a file + an audio file
-- 🔑 The audio becomes your encryption key (via SHA-256)
-- 🛡️ File is encrypted with AES-GCM
-- 📦 A Room Code is generated for the receiver
-- 🔽 Receiver uploads the **same audio file** → gets the decrypted file
-
-> No passwords. No accounts. Just audio.
+- [The Concept](#the-concept)
+- [How It Works](#how-it-works)
+- [System Architecture](#system-architecture)
+- [Security Design](#security-design)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Installation & Setup](#installation--setup)
+- [API Endpoints](#api-endpoints)
+- [Auto Cleanup](#auto-cleanup)
+- [Important Notes](#important-notes)
+- [Future Roadmap](#future-roadmap)
+- [Author](#author)
+- [License](#license)
 
 ---
 
-## 🧠 How It Works
-**1. Input Phase** > User uploads a target file + a "Key" audio file through the **React** dashboard.
+## The Concept
 
-**2. Cryptographic Processing** > **Flask** backend reads the audio bytes ➔ Generates a **SHA-256** hash ➔ Encrypts the file using **AES-GCM** with a random 12-byte nonce.
+Traditional passwords are short, memorable, and therefore brute-forceable. AudioShield replaces the password with an audio file — a data source with millions of bytes of entropy that is impractical to guess or brute-force.
 
-**3. Storage & Access** > Metadata is logged in **SQLite** ➔ Encrypted `.enc` file is stored ➔ System generates a unique **Room Code** and **QR Code**.
+- The sender uploads a target file along with an audio file.
+- The audio file's raw bytes are hashed using SHA-256 to derive a 256-bit encryption key.
+- The target file is encrypted using AES-GCM and stored.
+- A unique Room Code and QR code are generated for retrieval.
+- The receiver uploads the exact same audio file to derive the same key and decrypt the file.
 
-**4. Decryption** > Receiver enters the Room Code + uploads the **exact same audio file** ➔ System validates the hash ➔ File is decrypted and served.
-
-### 🔼 Upload — Sender Side
-
-1. User uploads a **file** and an **audio file**
-2. Backend reads audio → raw bytes
-3. `SHA-256(audio_bytes)` → 256-bit encryption key
-4. File is encrypted using **AES-GCM** with a random 12-byte nonce
-5. Encrypted file is stored on the server
-6. A unique **Room Code** and **QR Code** are returned
+Even a single-byte difference in the audio file produces a completely different SHA-256 hash, making decryption mathematically impossible without the correct audio.
 
 ---
 
-### 🔗 Sharing Phase
+## How It Works
 
-The sender shares two things via a trusted channel:
-- The **Room Code** or **QR Code**
-- The **original audio file** (exact copy)
+**1. Upload (Sender)**
+- User uploads a file and a "key" audio file via the React frontend.
+- The Flask backend reads the audio bytes and computes `SHA-256(audio_bytes)` to derive a 256-bit key.
+- The file is encrypted using AES-GCM with a randomly generated 12-byte nonce.
+- The encrypted file is uploaded to Supabase Storage.
+- A room record (room code, file name, expiry time) is inserted into the PostgreSQL database.
+- A Room Code and QR code are returned to the sender.
+
+**2. Sharing**
+- The sender shares the Room Code (or QR code) and the original audio file with the receiver through a trusted channel.
+
+**3. Download (Receiver)**
+- The receiver enters the Room Code and uploads the same audio file.
+- The backend re-derives the key from the audio bytes, fetches the encrypted file from Supabase Storage, and attempts AES-GCM decryption.
+- If the audio matches, the file is decrypted and served. If it doesn't, decryption fails and access is denied.
+
+**4. Expiry**
+- Rooms and their associated encrypted files automatically expire and are deleted after 24 hours.
 
 ---
 
-### 🔽 Download — Receiver Side
+## System Architecture
 
-1. Receiver enters the Room Code (or scans QR)
-2. Uploads the same audio file
-3. Backend regenerates the key from audio bytes
-4. Extracts nonce → decrypts file using AES-GCM
 ```
-✅ Audio matches  →  File downloaded successfully
-❌ Audio differs  →  Access denied
-```
-
----
-## 🔒 Security Architecture
-
-AudioShield implements **Authenticated Encryption with Associated Data (AEAD)** via the AES-GCM algorithm.
-
-$$Key = \text{SHA-256}(\text{Audio Bytes})$$
-$$Ciphertext = \text{AES-GCM}_{Key, Nonce}(\text{Plaintext})$$
-
-> [!CAUTION]
-> We follow the **"Zero-Knowledge"** principle. The server never stores the original audio or the derived key. It only stores the `.enc` file and the random 12-byte nonce.
-
-
-## ✨ Features
-
-- 🔐 **Passwordless encryption** — audio file is the only key
-- 🛡️ **AES-GCM** authenticated encryption (confidentiality + integrity)
-- 📷 **QR Code** generation for easy sharing
-- 🧹 **Auto file cleanup** after 24 hours
-- ⚡ **50MB** file upload support
-- 📱 **Responsive UI** — React + Tailwind CSS
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React (Vite), CSS, Axios |
-| Backend | Python, Flask, Flask-CORS |
-| Encryption | AES-GCM (`cryptography`), SHA-256 (`hashlib`) |
-| QR Code | `qrcode` library |
-| Database | SQLite |
-
----
-
-## 📁 Project Structure
-```
-AudioShield/
-│
-├── backend/
-│   ├── app.py              # Flask routes & API logic
-│   ├── crypto_utils.py     # AES-GCM encryption & decryption
-│   ├── database.py         # SQLite setup & queries
-│   ├── database.db         # Local database file
-│   └── uploads/            # Encrypted file storage
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   └── App.jsx
-│   ├── public/
-│   └── package.json
-│
-└── README.md
+┌─────────────┐        HTTPS        ┌──────────────┐
+│   Frontend   │ ───────────────────▶│   Backend    │
+│  (Vercel)    │◀─────────────────── │  (Render)    │
+└─────────────┘                     └──────┬───────┘
+                                            │
+                       ┌────────────────────┼────────────────────┐
+                       ▼                                        ▼
+              ┌─────────────────┐                     ┌───────────────────┐
+              │  Supabase Postgres│                     │ Supabase Storage  │
+              │  (room metadata)  │                     │ (encrypted files) │
+              └─────────────────┘                     └───────────────────┘
 ```
 
----
-
-## ⚙️ Installation & Setup
-
-### Prerequisites
-- Node.js v18+
-- Python 3.9+
-- pip
+- **Frontend** is deployed on Vercel and communicates with the backend over HTTPS.
+- **Backend** (Flask) is deployed on Render and handles encryption, decryption, QR generation, and cleanup logic.
+- **Database** is a managed PostgreSQL instance on Supabase, accessed via the transaction pooler, storing room metadata (room code, file name, expiry time).
+- **Storage** is a private Supabase Storage bucket that holds the AES-GCM encrypted `.enc` files. No plaintext files or audio keys are ever persisted.
 
 ---
 
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/tushar1121s/audioshield.git
-cd audioshield
-```
+## Security Design
 
----
-
-### 2️⃣ Backend Setup
-```bash
-cd backend
-
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install flask flask-cors cryptography qrcode
-
-# Initialize the database
-python database.py
-
-# Start the server
-python app.py
-```
-
-> Runs at: `http://localhost:5000`
-
----
-
-### 3️⃣ Frontend Setup
-```bash
-cd frontend
-
-npm install
-npm run dev
-```
-
-> Runs at: `http://localhost:3000`
-
----
-
-## 🔐 Security Design
 ```
 Audio File
     │
@@ -211,108 +108,247 @@ SHA-256(audio_bytes)
 AES-GCM Encrypt
     ├── Random 12-byte Nonce
     ├── Ciphertext
-    └── Auth Tag
+    └── Authentication Tag
     │
     ▼
-Stored as .enc file (nonce + ciphertext)
+Stored as .enc file in Supabase Storage
 ```
 
-**What this guarantees:**
-- ✅ Confidentiality — unreadable without the correct audio file
-- ✅ Integrity — any tampering is detected instantly
-- ✅ Authenticity — AES-GCM tag validates the decryption
+AudioShield follows a zero-knowledge principle: the server never stores the original audio file or the derived key. Only the encrypted `.enc` blob (nonce + ciphertext + auth tag) is persisted, and it is deleted automatically after 24 hours.
+
+**Guarantees:**
+- **Confidentiality** — file contents are unreadable without the exact audio key.
+- **Integrity** — any tampering with the ciphertext is detected via the AES-GCM authentication tag.
+- **Authenticity** — decryption only succeeds if the derived key matches the one used for encryption.
 
 ---
 
-## 📡 API Endpoints
+## Features
+
+- Passwordless encryption — the audio file is the only key
+- AES-GCM authenticated encryption (confidentiality + integrity in one primitive)
+- QR code generation for convenient sharing
+- Automatic file and metadata cleanup after 24 hours
+- Support for uploads up to 50MB
+- Cloud-native deployment across frontend, backend, database, and storage
+- Responsive UI across devices
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, Axios |
+| Frontend Hosting | Vercel |
+| Backend | Python, Flask, Flask-CORS |
+| Backend Hosting | Render |
+| Encryption | AES-GCM (`cryptography`), SHA-256 (`hashlib`) |
+| Database | PostgreSQL (Supabase, transaction pooler) |
+| File Storage | Supabase Storage (private bucket) |
+| QR Code | `qrcode` library |
+
+---
+
+## Project Structure
+
+```
+AudioShield/
+│
+├── audioshield_backend/
+│   ├── app.py               # Flask routes, upload/download logic, cleanup
+│   ├── crypto_utils.py      # AES-GCM encryption & decryption
+│   ├── database.py          # PostgreSQL connection (Supabase)
+│   ├── requirements.txt     # Backend dependencies
+│   └── .env                 # DATABASE_URL, SUPABASE_URL, SUPABASE_KEY (gitignored)
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── services/
+│   │   │   └── api.js       # Backend base URL & API calls
+│   │   └── App.jsx
+│   ├── public/
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## Installation & Setup
+
+### Prerequisites
+- Node.js v18+
+- Python 3.9+
+- A Supabase project (Postgres database + Storage bucket)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/tushar1121s/AudioShield.git
+cd AudioShield
+```
+
+### 2. Backend Setup
+```bash
+cd audioshield_backend
+
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+pip install -r requirements.txt
+```
+
+Create a `.env` file in `audioshield_backend/`:
+```
+DATABASE_URL=<your Supabase Postgres connection string>
+SUPABASE_URL=<your Supabase project URL>
+SUPABASE_KEY=<your Supabase secret/service_role key>
+```
+
+Initialize the database and start the server:
+```bash
+python database.py
+python app.py
+```
+> Runs at: `http://localhost:5000`
+
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Update `frontend/src/services/api.js` to point to your backend (local or deployed):
+```js
+const BASE_URL = "http://localhost:5000";
+```
+
+> Runs at: `http://localhost:3000`
+
+### 4. Production Deployment
+- **Backend** → Deploy to Render (root directory: `audioshield_backend`, build command: `pip install -r requirements.txt`, start command: `python app.py`). Set `DATABASE_URL`, `SUPABASE_URL`, and `SUPABASE_KEY` as environment variables in the Render dashboard.
+- **Frontend** → Deploy to Vercel. Update `BASE_URL` in `api.js` to the live Render URL before pushing.
+- **Database & Storage** → Managed entirely by Supabase; no additional setup required beyond the initial project and bucket creation.
+
+---
+
+## API Endpoints
 
 ### `POST /upload`
 Encrypts and stores a file.
 
 | Field | Type | Description |
-|-------|------|-------------|
+|---|---|---|
 | `file` | form-data | File to protect |
 | `audio` | form-data | Audio key file |
 
 **Response:**
 ```json
 {
+  "message": "Secured!",
   "room_code": "ABC123",
-  "qr_code": "<base64_image>"
+  "qr_code": "<base64_image>",
+  "expires_at": "2026-08-10 19:41:18"
 }
 ```
-
----
 
 ### `POST /download`
 Decrypts and returns the file.
 
 | Field | Type | Description |
-|-------|------|-------------|
+|---|---|---|
 | `room_code` | string | Room identifier |
 | `audio` | form-data | Audio key file |
 
-**Response:** Decrypted file stream, or `403 Access Denied`
-
----
+**Response:** Decrypted file stream, or an error if the audio key or room code is invalid.
 
 ### `GET /check-room`
-Checks if a room exists.
+Checks whether a room exists and is still valid.
 
 | Param | Type | Description |
-|-------|------|-------------|
-| `room_code` | string | Room to validate |
+|---|---|---|
+| `room` | string | Room code to validate |
 
 ---
 
-## 🧹 Auto Cleanup
+## Auto Cleanup
 
-A cleanup routine runs **before every request**:
-- Scans all stored files for expiry
-- Deletes files from disk
-- Removes records from the database
+A cleanup routine runs before every `/upload` and `/download` request:
+- Scans the database for rooms past their expiry time.
+- Removes the corresponding encrypted file from Supabase Storage.
+- Deletes the room record from PostgreSQL.
 
-> Expiry: **24 hours** from upload time
-
----
-
-## ⚠️ Important Notes
-
-- Audio must be **byte-for-byte identical** — even minor edits cause decryption to fail
-- AudioShield does **not** store your original file or audio key — only the encrypted output
-- Max file size: **50MB**
-- All files are **permanently deleted** after 24 hours
+Default expiry: **24 hours** from upload time.
 
 ---
 
-## 🗺️ Future Roadmap
+## Important Notes
 
-- [ ] Cloud deployment (Render + Vercel)
-- [ ] MongoDB for scalable storage
-- [ ] AWS S3 / Cloudinary for file hosting
-- [ ] Audio fingerprinting (tolerance for minor audio edits)
-- [ ] User authentication & file history dashboard
-
----
-
-## 👨‍💻 Author
-
-**Tushar Kumar** — 3rd Year B.Tech, Full-Stack Developer
+- The audio key must be byte-for-byte identical between sender and receiver; even minor re-encoding will change the derived key and cause decryption to fail.
+- AudioShield does not store the original file or the audio key at any point — only the AES-GCM encrypted output is persisted, and only temporarily.
+- Maximum file size: 50MB.
+- All encrypted files and their metadata are permanently deleted after expiry.
 
 ---
 
-## ⭐ Why This Project Stands Out
+## Future Roadmap
+
+The current version is a functional end-to-end deployment. Planned improvements to move toward a production-grade, full-stack application:
+
+**Backend**
+- Migrate from Flask to FastAPI for async request handling and better concurrency under load.
+- Add proper API rate limiting and request validation.
+- Introduce structured logging and error monitoring.
+
+**Authentication & User Accounts**
+- User login/signup (email or OAuth-based).
+- Per-user file history dashboard — view past uploads, room codes, and expiry status.
+- Role-based access for shared/team rooms.
+
+**Storage & Scalability**
+- Evaluate migration to AWS (S3 + RDS + EC2/ECS) for tighter integration and reduced cross-service latency at scale.
+- Configurable file expiry per upload instead of a fixed 24-hour window.
+- Support for larger file sizes via chunked/multipart uploads.
+
+**Frontend & UX**
+- Full UI redesign for consistent experience across mobile and desktop.
+- Progressive Web App (PWA) support for installable mobile experience.
+- Real-time upload/decryption progress indicators.
+- Dark mode and accessibility improvements.
+
+**Security**
+- Audio fingerprinting to tolerate minor re-encoding of the key audio (e.g., format or bitrate changes) while preserving security guarantees.
+- Optional multi-factor key derivation (audio + PIN).
+- Audit logging for room access attempts.
+
+**Infrastructure**
+- CI/CD pipeline for automated testing and deployment.
+- Staging environment separate from production.
+- Eliminate Render free-tier cold starts via a paid tier or alternative always-on hosting once the project moves toward production use.
+
+---
+
+## Author
+
+**Tushar Kumar**
+3rd Year B.Tech, Full-Stack Developer
+
+---
+
+## Why This Project Stands Out
 
 Unlike typical CRUD projects, AudioShield:
 
-- Uses **audio as a real cryptographic primitive** — not just a gimmick
-- Implements **production-grade AES-GCM encryption** from scratch
-- Combines security + usability with **QR-based sharing**
-- Includes real-world features like **auto expiry and cleanup**
-- Demonstrates deep understanding of **cryptography concepts**
+- Uses audio as an actual cryptographic primitive rather than a novelty feature.
+- Implements AES-GCM authenticated encryption correctly, including nonce handling and key derivation.
+- Runs on a real cloud architecture — separate frontend, backend, database, and storage services communicating in production.
+- Includes production-relevant features such as automatic expiry, cleanup, and QR-based sharing.
+- Demonstrates practical understanding of both applied cryptography and full-stack deployment.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
